@@ -6,23 +6,38 @@ use App\Models\Article;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreArticleRequest;
 use App\Http\Requests\UpdateArticleRequest;
+use App\Http\Resources\ArticleDetailsResource;
+use App\Http\Resources\ArticleListResource;
+use F9Web\ApiResponseHelpers;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ArticleController extends Controller
 {
+    use ApiResponseHelpers;
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        return $request->boolean('featured') ? $this->featuredArticles() : $this->allArticles();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function allArticles()
     {
-        //
+        $articles = Article::paginate(9);
+
+        return ArticleListResource::collection($articles);
+    }
+
+    public function featuredArticles(): JsonResponse
+    {
+        $articles = Article::limit(3)->get();
+
+        return $this->respondWithSuccess([
+            'data' => ArticleListResource::collection($articles)
+        ]);
     }
 
     /**
@@ -36,17 +51,11 @@ class ArticleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Article $article)
+    public function show(Article $article): JsonResponse
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Article $article)
-    {
-        //
+        return $this->respondWithSuccess([
+            'data' => new ArticleDetailsResource($article)
+        ]);
     }
 
     /**
@@ -60,8 +69,10 @@ class ArticleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Article $article)
+    public function destroy(Article $article): JsonResponse
     {
-        //
+        $article->delete();
+        // TODO: Delete Cover Image
+        return $this->respondOk("Article has been deleted successfully!");
     }
 }

@@ -19,7 +19,7 @@ class ArticleFactory extends Factory
         return [
             "user_id" => "",
             "title" => fake()->sentence(4, false),
-            "body" => fake()->text(450),
+            "body" => fake()->text(1000),
             "cover" => "https://placehold.co/900x290",
         ];
     }
