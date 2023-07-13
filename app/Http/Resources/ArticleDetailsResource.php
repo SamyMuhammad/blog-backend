@@ -19,6 +19,7 @@ class ArticleDetailsResource extends JsonResource
             "slug" => $this->slug,
             "body" => $this->body,
             "cover" => asset($this->cover),
+            "created_at" => $this->created_at?->format('d M Y'),
             "user" => new UserResource($this->user)
         ];
     }

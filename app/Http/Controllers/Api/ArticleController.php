@@ -33,7 +33,7 @@ class ArticleController extends Controller
 
     public function featuredArticles(): JsonResponse
     {
-        $articles = Article::limit(3)->get();
+        $articles = Article::inRandomOrder()->limit(3)->get();
 
         return $this->respondWithSuccess([
             'data' => ArticleListResource::collection($articles)
