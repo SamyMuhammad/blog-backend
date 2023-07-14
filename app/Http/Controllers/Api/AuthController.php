@@ -9,8 +9,9 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
-use App\Http\Requests\RegisterRequest;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\RegisterRequest;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -34,11 +35,8 @@ class AuthController extends Controller
 
         $user = User::firstWhere('email', $data['email']);
 
-        if (!$user) {
-            return $this->respondNotFound("These credentials do not match our records.");
-
-        } elseif (!Hash::check($data['password'], $user->password)) {
-            return $this->respondUnAuthenticated("The provided password is incorrect.");
+        if (!Hash::check($data['password'], $user->password)) {
+            throw ValidationException::withMessages(['email' => 'These credentials do not match our records.']);
         }
 
         $token = $user->createToken('react-app')->plainTextToken;
