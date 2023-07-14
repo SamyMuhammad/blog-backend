@@ -4,12 +4,14 @@ namespace App\Http\Middleware;
 
 use App\Providers\RouteServiceProvider;
 use Closure;
+use F9Web\ApiResponseHelpers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class RedirectIfAuthenticated
 {
+    use ApiResponseHelpers;
     /**
      * Handle an incoming request.
      *
@@ -21,7 +23,9 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+                return $request->expectsJson() 
+                ? $this->respondForbidden("User already signed in.") 
+                : redirect(RouteServiceProvider::HOME);
             }
         }
 
