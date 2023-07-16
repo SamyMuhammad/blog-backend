@@ -3,22 +3,25 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Article;
+use GuzzleHttp\Middleware;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use F9Web\ApiResponseHelpers;
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreArticleRequest;
 use App\Http\Requests\UpdateArticleRequest;
-use App\Http\Resources\ArticleDetailsResource;
 use App\Http\Resources\ArticleListResource;
-use F9Web\ApiResponseHelpers;
-use GuzzleHttp\Middleware;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use App\Http\Resources\ArticleDetailsResource;
 
 class ArticleController extends Controller
 {
     use ApiResponseHelpers;
 
     public function __construct() {
-        $this->middleware('auth:sanctum')->only(['store', 'update', 'destroy']);
+        $this->middleware('auth:sanctum')->only(['myArticles', 'store', 'update', 'destroy']);
+        $this->authorizeResource(Article::class, 'article');
     }
 
     /**
@@ -43,6 +46,13 @@ class ArticleController extends Controller
         return $this->respondWithSuccess([
             'data' => ArticleListResource::collection($articles)
         ]);
+    }
+
+    public function myArticles(Request $request)
+    {
+        $articles = $request->user()->articles()->paginate(9);
+
+        return ArticleListResource::collection($articles);
     }
 
     /**
@@ -82,8 +92,13 @@ class ArticleController extends Controller
      */
     public function destroy(Article $article): JsonResponse
     {
+        $cover = $article->cover;
         $article->delete();
-        // TODO: Delete Cover Image
+
+        // Delete cover image from file storage
+        if (! Str::startsWith($cover, 'http') && Storage::disk('public')->exists($cover)) {
+            Storage::disk('public')->delete($cover);
+        }
         return $this->respondOk("Article has been deleted successfully!");
     }
 }

@@ -22,6 +22,7 @@ class ArticleDetailsResource extends JsonResource
             "body" => $this->body,
             "cover" => asset(Str::startsWith($this->cover, 'http') ? $this->cover : Storage::url($this->cover)),
             "created_at" => $this->created_at?->format('d M Y'),
+            "auth_is_owner" => auth('sanctum')->id() === $this->user_id,
             "user" => new UserResource($this->user)
         ];
     }
