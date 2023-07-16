@@ -42,4 +42,10 @@ class AuthController extends Controller
         $token = $user->createToken('react-app')->plainTextToken;
         return $this->respondWithSuccess(['user' => UserResource::make($user), 'token' => $token]);
     }
+
+    public function logout(Request $request): JsonResponse
+    {
+        $request->user()->currentAccessToken()->delete();
+        return $this->respondOk("Logged out successfully!");
+    }
 }
