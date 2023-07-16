@@ -20,7 +20,7 @@ class ArticleDetailsResource extends JsonResource
             "title" => $this->title,
             "slug" => $this->slug,
             "body" => $this->body,
-            "cover" => Str::startsWith($this->cover, 'http') ? asset($this->cover) : Storage::url($this->cover),
+            "cover" => asset(Str::startsWith($this->cover, 'http') ? $this->cover : Storage::url($this->cover)),
             "created_at" => $this->created_at?->format('d M Y'),
             "user" => new UserResource($this->user)
         ];
