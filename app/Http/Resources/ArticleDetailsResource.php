@@ -2,7 +2,9 @@
 
 namespace App\Http\Resources;
 
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ArticleDetailsResource extends JsonResource
@@ -18,7 +20,7 @@ class ArticleDetailsResource extends JsonResource
             "title" => $this->title,
             "slug" => $this->slug,
             "body" => $this->body,
-            "cover" => asset($this->cover),
+            "cover" => Str::startsWith($this->cover, 'http') ? asset($this->cover) : Storage::url($this->cover),
             "created_at" => $this->created_at?->format('d M Y'),
             "user" => new UserResource($this->user)
         ];

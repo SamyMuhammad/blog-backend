@@ -9,12 +9,17 @@ use App\Http\Requests\UpdateArticleRequest;
 use App\Http\Resources\ArticleDetailsResource;
 use App\Http\Resources\ArticleListResource;
 use F9Web\ApiResponseHelpers;
+use GuzzleHttp\Middleware;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ArticleController extends Controller
 {
     use ApiResponseHelpers;
+
+    public function __construct() {
+        $this->middleware('auth:sanctum')->only(['store', 'update', 'destroy']);
+    }
 
     /**
      * Display a listing of the resource.
@@ -45,7 +50,13 @@ class ArticleController extends Controller
      */
     public function store(StoreArticleRequest $request)
     {
-        //
+        $data = $request->validated();
+
+        $data['cover'] = $request->file('cover')->store('covers', 'public');
+
+        $article = $request->user()->articles()->create($data);
+
+        return $this->respondCreated(new ArticleDetailsResource($article));
     }
 
     /**

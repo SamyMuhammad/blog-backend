@@ -13,7 +13,7 @@ class Article extends Model
 {
     use HasFactory, HasSlug;
 
-    protected $fillables = [
+    protected $fillable = [
         "user_id",
         "title",
         "slug",
