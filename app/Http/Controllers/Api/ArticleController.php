@@ -19,7 +19,8 @@ class ArticleController extends Controller
 {
     use ApiResponseHelpers;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->middleware('auth:sanctum')->only(['myArticles', 'store', 'update', 'destroy']);
         $this->authorizeResource(Article::class, 'article');
     }
@@ -88,6 +89,11 @@ class ArticleController extends Controller
 
         if ($request->hasFile('cover')) {
             $data['cover'] = $request->file('cover')->store('covers', 'public');
+            
+            // Delete cover image from file storage
+            if (!Str::startsWith($article->cover, 'http') && Storage::disk('public')->exists($article->cover)) {
+                Storage::disk('public')->delete($article->cover);
+            }
         } else {
             unset($data['cover']);
         }
@@ -106,7 +112,7 @@ class ArticleController extends Controller
         $article->delete();
 
         // Delete cover image from file storage
-        if (! Str::startsWith($cover, 'http') && Storage::disk('public')->exists($cover)) {
+        if (!Str::startsWith($cover, 'http') && Storage::disk('public')->exists($cover)) {
             Storage::disk('public')->delete($cover);
         }
         return $this->respondOk("Article has been deleted successfully!");
