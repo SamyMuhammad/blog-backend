@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateArticleRequest extends FormRequest
+class UpdateArticleRequest extends StoreArticleRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +21,8 @@ class UpdateArticleRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            //
-        ];
+        $storeRules = parent::rules();
+        $storeRules['cover'] = ['nullable', 'image', 'max:6144'];
+        return $storeRules;
     }
 }

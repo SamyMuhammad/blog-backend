@@ -84,7 +84,17 @@ class ArticleController extends Controller
      */
     public function update(UpdateArticleRequest $request, Article $article)
     {
-        //
+        $data = $request->validated();
+
+        if ($request->hasFile('cover')) {
+            $data['cover'] = $request->file('cover')->store('covers', 'public');
+        } else {
+            unset($data['cover']);
+        }
+
+        $article->update($data);
+
+        return $this->respondCreated(new ArticleDetailsResource($article));
     }
 
     /**
