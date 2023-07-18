@@ -2,51 +2,34 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Article;
 use App\Models\Comment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCommentRequest;
 use App\Http\Requests\UpdateCommentRequest;
+use App\Http\Resources\CommentResource;
+use F9Web\ApiResponseHelpers;
 
 class CommentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
+    use ApiResponseHelpers;
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function __construct()
     {
-        //
-    }
+        $this->authorizeResource(Comment::class, 'comment');
+    }    
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCommentRequest $request)
+    public function store(StoreCommentRequest $request, Article $article)
     {
-        //
-    }
+        $article->comments()->create([
+            'user_id' => $request->user()->id,
+            'body' => $request->body,
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Comment $comment)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Comment $comment)
-    {
-        //
+        return CommentResource::collection($article->comments()->latest()->limit(40)->get()->sortBy('created_at'));
     }
 
     /**

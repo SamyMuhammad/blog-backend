@@ -23,7 +23,8 @@ class ArticleDetailsResource extends JsonResource
             "cover" => asset(Str::startsWith($this->cover, 'http') ? $this->cover : Storage::url($this->cover)),
             "created_at" => $this->created_at?->format('d M Y'),
             "auth_is_owner" => auth('sanctum')->id() === $this->user_id,
-            "user" => new UserResource($this->user)
+            "user" => new UserResource($this->user),
+            "comments" => CommentResource::collection($this->comments()->latest()->limit(40)->get()->sortBy('created_at')),
         ];
     }
 }
