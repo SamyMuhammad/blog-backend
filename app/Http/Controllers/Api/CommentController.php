@@ -5,8 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Article;
 use App\Models\Comment;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreCommentRequest;
-use App\Http\Requests\UpdateCommentRequest;
+use App\Http\Requests\CommentRequest;
 use App\Http\Resources\CommentResource;
 use F9Web\ApiResponseHelpers;
 
@@ -22,7 +21,7 @@ class CommentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCommentRequest $request, Article $article)
+    public function store(CommentRequest $request, Article $article)
     {
         $article->comments()->create([
             'user_id' => $request->user()->id,
@@ -35,9 +34,10 @@ class CommentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCommentRequest $request, Comment $comment)
+    public function update(CommentRequest $request, Comment $comment)
     {
-        //
+        $comment->update(['body' => $request->body]);
+        return $this->respondOk("Comment has been updated successfully!");
     }
 
     /**
@@ -45,6 +45,7 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
-        //
+        $comment->delete();
+        return $this->respondOk("Comment has been deleted successfully!");
     }
 }
