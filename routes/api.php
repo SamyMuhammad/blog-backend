@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ArticleController;
 use App\Http\Controllers\Api\CommentController;
+use App\Http\Resources\UserResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +24,10 @@ Route::middleware('guest:sanctum')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('user', function (Request $request) {
+        return new UserResource($request->user());
+    });
+
     Route::post('logout', [AuthController::class, 'logout']);
     Route::apiResource('article.comment', CommentController::class)
     ->shallow()
