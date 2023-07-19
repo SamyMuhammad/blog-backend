@@ -8,3 +8,4 @@
 * Create a DB and put its name on the `.env` file
 * `php artisan key:generate`
 * `php artisan migrate:fresh --seed`
+* `php artisan storage:link`
