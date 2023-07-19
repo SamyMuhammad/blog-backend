@@ -14,6 +14,12 @@ class StoreArticleRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        $bodyWithoutTags = strip_tags($this->body);
+        return $this->merge(['body' => strlen($bodyWithoutTags) ? $this->body : '']);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
