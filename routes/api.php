@@ -19,7 +19,7 @@ use App\Http\Resources\UserResource;
 */
 
 Route::middleware('guest:sanctum')->group(function () {
-    Route::post('register', [AuthController::class, 'register']);
+    Route::post('register', [AuthController::class, 'register'])->name('api.register');
     Route::post('login', [AuthController::class, 'login']);
 });
 
