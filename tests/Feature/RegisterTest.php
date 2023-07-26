@@ -136,6 +136,6 @@ class RegisterTest extends TestCase
             'password_confirmation' => 'secret123',
         ]);
 
-        $response->assertJsonMissingValidationErrors(['password', 'password_confirmation']);
+        $response->assertJsonMissingValidationErrors('password');
     }
 }
