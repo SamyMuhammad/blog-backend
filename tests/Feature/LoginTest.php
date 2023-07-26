@@ -78,7 +78,7 @@ class LoginTest extends TestCase
             ->assertJsonValidationErrorFor('password');
 
         // valid
-        User::factory()->create(['password' => 'secret123']);
+        User::factory()->create(['password' => bcrypt('secret123')]);
         $response = $this->postJson(route('api.login'), [
             'password' => 'secret123',
         ]);
